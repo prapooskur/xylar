@@ -3,6 +3,8 @@ from discord import app_commands
 from discord.ext import commands
 import os
 import requests
+import aiohttp  
+import asyncio
 import json
 import io
 import base64
@@ -31,6 +33,8 @@ async def on_ready():
 async def simulate(interaction: discord.Interaction, prompt: str, negativeprompt: str="", batchsize: int=1, seed: int=-1):
     if batchsize>4:
         batchsize=4
+    url = sdurl+'/sdapi/v1/txt2img'
+    print("url is "+url)
     payload = {
         "prompt": prompt,
         "negative_prompt": negativeprompt,
@@ -41,12 +45,16 @@ async def simulate(interaction: discord.Interaction, prompt: str, negativeprompt
         print("requesting prompt "+prompt+" with no negative prompt")
     else:
         print("requesting prompt "+prompt+" with negative prompt "+negativeprompt)
-    response = requests.post(url=f'{sdurl}/sdapi/v1/txt2img', json=payload)
-    imagelist=response.json().get("images","")
-    for i in imagelist:
-        outputimg = Image.open(io.BytesIO(base64.b64decode(i.split(",",1)[0])))
-        outputimg.save('output.png')
-    await interaction.response.send_message(file=discord.File('output.png'))
+    async with aiohttp.ClientSession() as session:
+            print("starting")
+            async with session.post(url,json=payload) as response:
+                output=await response.json()
+                imagelist=output.get("images","")
+                for i in imagelist:
+                    outputimg = Image.open(io.BytesIO(base64.b64decode(i.split(",",1)[0])))
+                    outputimg.save('output.png')
+                print("done")
+            await interaction.response.send_message(file=discord.File('output.png'))
 
 
 
