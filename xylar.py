@@ -8,6 +8,7 @@ import json
 import io
 import base64
 from PIL import Image, PngImagePlugin
+from typing import Literal
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -30,7 +31,7 @@ async def on_ready():
         print(f"error syncing commands: {e}")
     
 @bot.tree.command(name='simulate', description="generate an image with stable-diffusion-webui api")
-async def simulate(interaction: discord.Interaction, prompt: str, negativeprompt: str="", batchsize: int=1, seed: int=-1):
+async def simulate(interaction: discord.Interaction, prompt: str, negativeprompt: str="", batchsize: Literal[tuple([i for i in range(0,19)])] = 0, seed: int=-1):
 
     if batchsize>4:
         batchsize=4
