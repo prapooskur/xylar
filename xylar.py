@@ -31,6 +31,7 @@ async def on_ready():
     
 @bot.tree.command(name='simulate', description="generate an image with stable-diffusion-webui api")
 async def simulate(interaction: discord.Interaction, prompt: str, negativeprompt: str="", batchsize: int=1, seed: int=-1):
+
     if batchsize>4:
         batchsize=4
     url = sdurl+'/sdapi/v1/txt2img'
@@ -46,6 +47,7 @@ async def simulate(interaction: discord.Interaction, prompt: str, negativeprompt
     else:
         print("requesting prompt "+prompt+" with negative prompt "+negativeprompt)
     async with aiohttp.ClientSession() as session:
+            await interaction.response.defer()
             print("starting")
             async with session.post(url,json=payload) as response:
                 output=await response.json()
@@ -54,7 +56,7 @@ async def simulate(interaction: discord.Interaction, prompt: str, negativeprompt
                     outputimg = Image.open(io.BytesIO(base64.b64decode(i.split(",",1)[0])))
                     outputimg.save('output.png')
                 print("done")
-            await interaction.response.send_message(file=discord.File('output.png'))
+            await interaction.followup.send(file=discord.File('output.png'))
 
 
 
