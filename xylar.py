@@ -12,6 +12,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 intents=discord.Intents.default()
+intents.message_content = True #v2
 
 bot = commands.Bot(command_prefix="/",intents=intents)
 
@@ -29,17 +30,18 @@ async def on_ready():
         print(f"error syncing commands: {e}")
     
 @bot.tree.command(name='simulate', description="generate an image with stable-diffusion-webui api")
-async def simulate(interaction: discord.Interaction, prompt: str, negativeprompt: str="", batchsize: int=1):
+async def simulate(interaction: discord.Interaction, prompt: str, negativeprompt: str="", batchsize: int=1, seed: int=-1):
     if batchsize>4:
         batchsize=4
     payload = {
         "prompt": prompt,
         "negative_prompt": negativeprompt,
-        "batch_size": 1
+        "batch_size": 1,
+        "seed": seed
     }
     response = requests.post(url=f'{sdurl}/sdapi/v1/txt2img', json=payload)
     images=response.json().get("images","")
-    for i in images['images']:
+    for i in images:
         image = Image.open(io.BytesIO(base64.b64decode(i.split(",",1)[0])))
     await interaction.response.send_message(file=image)
 
