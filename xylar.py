@@ -39,7 +39,7 @@ async def simulate(interaction: discord.Interaction, prompt: str, negativeprompt
     payload = {
         "prompt": prompt,
         "negative_prompt": negativeprompt,
-        "batch_size": 1,
+        "batch_size": batchsize,
         "seed": seed
     }
     if (negativeprompt == ""):
@@ -52,12 +52,16 @@ async def simulate(interaction: discord.Interaction, prompt: str, negativeprompt
             async with session.post(url,json=payload) as response:
                 output=await response.json()
                 imagelist=output.get("images","")
+                files=[]
+                count=0
                 for i in imagelist:
                     outputimg = Image.open(io.BytesIO(base64.b64decode(i.split(",",1)[0])))
-                    outputimg.save('output.png')
+                    count+=1
+                    filename="output"+count+".png"
+                    outputimg.save(filename)
+                    outfiles+=discord.File(filename)
                 print("done")
-            await interaction.followup.send(file=discord.File('output.png'))
-
+            await interaction.followup.send(files=outfiles)
 
 
 bot.run(os.getenv('TOKEN'))
