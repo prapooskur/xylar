@@ -19,7 +19,7 @@ intents.message_content = True #v2
 bot = commands.Bot(command_prefix="/",intents=intents)
 
 sdurl = os.getenv('SDURL')
-outlist=[[discord.File('output1.png')],[discord.File('output1.png'),discord.File('output2.png')],[discord.File('output1.png'),discord.File('output2.png'),discord.File('output3.png')],[discord.File('output1.png'),discord.File('output2.png'),discord.File('output3.png'),discord.File('output4.png')]]
+
 
 @bot.event
 async def on_ready():
@@ -54,12 +54,13 @@ async def simulate(interaction: discord.Interaction, prompt: str, negativeprompt
                 output=await response.json()
                 imagelist=output.get("images","")
                 count=0
-                outfiles=outlist[batchsize-1]
                 for i in imagelist:
                     outputimg = Image.open(io.BytesIO(base64.b64decode(i.split(",",1)[0])))
                     count+=1
                     filename="output"+str(count)+".png"
                     outputimg.save(filename)
+                outlist=[[discord.File('output1.png')],[discord.File('output1.png'),discord.File('output2.png')],[discord.File('output1.png'),discord.File('output2.png'),discord.File('output3.png')],[discord.File('output1.png'),discord.File('output2.png'),discord.File('output3.png'),discord.File('output4.png')]]
+                outfiles=outlist[batchsize-1]
             await interaction.followup.send(files=outfiles)
 
 
