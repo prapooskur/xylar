@@ -60,7 +60,6 @@ async def simulate(interaction: discord.Interaction, prompt: str, negativeprompt
                     count+=1
                     filename="output"+str(count)+".png"
                     outputimg.save(filename)
-                outfiles=[discord.File('output1.png'),discord.File('output2.png'),discord.File('output3.png'),discord.File('output4.png')]
             await interaction.followup.send(files=outfiles)
 
 
