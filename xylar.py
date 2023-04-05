@@ -31,7 +31,7 @@ async def on_ready():
         print(f"error syncing commands: {e}")
     
 @bot.tree.command(name='simulate', description="generate an image with stable-diffusion-webui api")
-async def simulate(interaction: discord.Interaction, prompt: str, negativeprompt: str="", batchsize: Literal[tuple([i for i in range(1,3)])] = 1, seed: int=-1):
+async def simulate(interaction: discord.Interaction, prompt: str, negativeprompt: str="", batchsize: Literal[tuple([1,2,3,4])] = 1, seed: int=-1):
 
     if batchsize>4:
         batchsize=4
