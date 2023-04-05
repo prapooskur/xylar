@@ -17,6 +17,8 @@ bot = commands.Bot(command_prefix="/",intents=intents)
 
 sdurl = os.getenv('SDURL')
 
+sizes = (1,2,3,4)
+
 @bot.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(bot))
@@ -27,11 +29,13 @@ async def on_ready():
         print(f"error syncing commands: {e}")
     
 @bot.tree.command(name='simulate', description="generate an image with stable-diffusion-webui api")
-async def simulate(interaction: discord.Interaction, prompt: str, negativeprompt: str, batchsize: Literal[tuple([i for i in range(1,4)])]=1):
+async def simulate(interaction: discord.Interaction, prompt: str, negativeprompt: str="", batchsize: int=1):
+    if batchsize>4:
+        batchsize=4
     payload = {
         "prompt": prompt,
         "negative_prompt": negativeprompt,
-        "batch_size": batchsize
+        "batch_size": 1
     }
     response = requests.post(url=f'{sdurl}/sdapi/v1/txt2img', json=payload)
     images=response.json().get("images","")
