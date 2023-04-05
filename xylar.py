@@ -46,17 +46,8 @@ async def simulate(interaction: discord.Interaction, prompt: str, negativeprompt
     for i in imagelist:
         outputimg = Image.open(io.BytesIO(base64.b64decode(i.split(",",1)[0])))
         outputimg.save('output.png')
-    await interaction.response.send_message(file=discord.File(outputimg))
+    await interaction.response.send_message(file=discord.File('output.png'))
 
-@bot.tree.command(name='sync', description='sync commands with discord')
-async def sync(interaction: discord.Interaction):
-    try:
-        synced=await bot.tree.sync()
-        print(f"Synced {len(synced)} command(s)")
-        interaction.response.send_message(f"Synced {len(synced)} command(s)")
-    except Exception as e:
-        print(f"error syncing commands: {e}")
-        interaction.response.send_message(f"error syncing commands: {e}")
 
 
 bot.run(os.getenv('TOKEN'))
